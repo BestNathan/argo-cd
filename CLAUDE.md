@@ -21,18 +21,24 @@ apps/                          # ArgoCD Application resources
 ├── observability-namespace.yaml  # Namespace + PVC
 ├── prometheus.yaml            # ArgoCD app for Prometheus
 ├── loki.yaml                  # ArgoCD app for Loki
-└── grafana.yaml               # ArgoCD app for Grafana
+├── grafana.yaml               # ArgoCD app for Grafana
+├── minio.yaml                 # ArgoCD app for MinIO
+├── redis.yaml                 # ArgoCD app for Redis
+└── jaeger.yaml                # ArgoCD app for Jaeger
 
 components/                    # Kubernetes manifests
 ├── cluster/                   # Cluster-scoped resources
 │   └── shared-nfs-pv.yaml     # NFS PersistentVolume
-└── observability/             # observability namespace resources
-    ├── namespace/
-    │   ├── namespace.yaml     # Namespace definition
-    │   └── pvc.yaml           # PVC binding to shared NFS
-    ├── prometheus/            # SA, RBAC, ConfigMap, Deployment, Service
-    ├── loki/                  # ConfigMap, Deployment, Service
-    └── grafana/               # Deployment, Service
+├── observability/             # observability namespace resources
+│   ├── namespace/
+│   │   ├── namespace.yaml     # Namespace definition
+│   │   └── pvc.yaml           # PVC binding to shared NFS
+│   ├── prometheus/            # SA, RBAC, ConfigMap, Deployment, Service
+│   ├── loki/                  # ConfigMap, Deployment, Service
+│   ├── grafana/               # Deployment, Service
+│   └── jaeger/                # Deployment, Service
+├── minio/                     # Namespace, PV, PVC, Deployment, Service, Ingress
+└── redis/                     # Namespace, Deployment, Service
 ```
 
 **Bootstrap flow:** `kubectl apply -f apps/app-of-apps.yaml` → ArgoCD creates child Applications → each Application syncs its component manifests.
@@ -45,8 +51,15 @@ The `cluster.yaml` app deploys cluster-scoped resources (no namespace). The `obs
 - **NFS storage:** server=`192.168.2.105`, mount=`/mnt/share/k8s`
 - All components share a single NFS-backed PVC (`shared-nfs`) with `subPath` isolation
 - Loki uses MinIO S3 (`minio.minio.svc:9000`) for object storage
-- Grafana uses NodePort (not Ingress) for external access
 - ArgoCD apps use `syncPolicy.automated` with `prune: true` and `selfHeal: true`
+- **Ingress convention** (Higress):
+  - Always use `ingressClassName: higress`
+  - Add annotation `nginx.ingress.kubernetes.io/ssl-redirect: "false"`
+  - Add annotation `higress.io/domain: "<app>.nhome.local"`
+  - Domain pattern: `<app>.nhome.local` → service name, port matches the app
+  - MinIO has two ingresses: `api.minio.nhome.local` (9000) and `console.minio.nhome.local` (9001)
+  - Higress gateway is NodePort — external access uses port `31693` (HTTP) / `32077` (HTTPS)
+  - For external access, configure DNS or router port forwarding: external 80 → node IP:31693
 
 ## Useful Commands
 
@@ -76,5 +89,6 @@ All observability components use a shared NFS PersistentVolume (`shared-nfs`, 10
 - Prometheus → `subPath: prometheus`
 - Loki → `subPath: loki`
 - Grafana → `subPath: grafana`
+- Jaeger → `subPath: jaeger`
 
 The PV is defined in `components/cluster/shared-nfs-pv.yaml`, the PVC in `components/observability/namespace/pvc.yaml`. Loki additionally stores data in MinIO S3.

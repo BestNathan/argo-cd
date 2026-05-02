@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: observability-apps
+  name: apps
   namespace: argocd
   labels:
-    app: observability-apps
+    app: apps
 spec:
   project: default
   source:

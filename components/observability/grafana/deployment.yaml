@@ -21,14 +21,7 @@ spec:
           ports:
             - containerPort: 3000
               name: http
-          env:
-            - name: GF_SECURITY_ADMIN_USER
-              value: "admin"
-            - name: GF_SECURITY_ADMIN_PASSWORD
-              value: "admin"
           volumeMounts:
-            - name: datasources
-              mountPath: /etc/grafana/provisioning/datasources
             - name: data
               mountPath: /var/lib/grafana
               subPath: grafana
@@ -40,9 +33,6 @@ spec:
               memory: "512Mi"
               cpu: "250m"
       volumes:
-        - name: datasources
-          configMap:
-            name: grafana-datasources
         - name: data
           persistentVolumeClaim:
             claimName: shared-nfs

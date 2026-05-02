@@ -10,9 +10,7 @@ spec:
   source:
     repoURL: https://github.com/BestNathan/nitops.git
     targetRevision: main
-    path: components/observability
-    directory:
-      include: "{namespace.yaml,pvc.yaml}"
+    path: components/observability/namespace
   destination:
     server: https://kubernetes.default.svc
     namespace: observability

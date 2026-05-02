@@ -28,6 +28,7 @@ spec:
               mountPath: /etc/loki
             - name: data
               mountPath: /loki
+              subPath: loki
           resources:
             requests:
               memory: "256Mi"
@@ -40,4 +41,5 @@ spec:
           configMap:
             name: loki-config
         - name: data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: shared-nfs

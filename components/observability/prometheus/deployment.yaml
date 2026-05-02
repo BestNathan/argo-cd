@@ -31,6 +31,7 @@ spec:
               mountPath: /etc/prometheus
             - name: data
               mountPath: /prometheus
+              subPath: prometheus
           resources:
             requests:
               memory: "512Mi"
@@ -44,4 +45,4 @@ spec:
             name: prometheus-config
         - name: data
           persistentVolumeClaim:
-            claimName: prometheus-data
+            claimName: shared-nfs

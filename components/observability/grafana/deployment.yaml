@@ -29,6 +29,9 @@ spec:
           volumeMounts:
             - name: datasources
               mountPath: /etc/grafana/provisioning/datasources
+            - name: data
+              mountPath: /var/lib/grafana
+              subPath: grafana
           resources:
             requests:
               memory: "256Mi"
@@ -40,3 +43,6 @@ spec:
         - name: datasources
           configMap:
             name: grafana-datasources
+        - name: data
+          persistentVolumeClaim:
+            claimName: shared-nfs

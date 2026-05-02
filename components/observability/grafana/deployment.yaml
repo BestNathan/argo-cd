@@ -21,6 +21,9 @@ spec:
           ports:
             - containerPort: 3000
               name: http
+          env:
+            - name: GF_TRACING_OPENTELEMETRY_ENABLED
+              value: "false"
           volumeMounts:
             - name: data
               mountPath: /var/lib/grafana

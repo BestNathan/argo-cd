@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger
+  namespace: observability
+  labels:
+    app: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one:latest
+          ports:
+            - containerPort: 16686
+              name: query
+              protocol: TCP
+            - containerPort: 14250
+              name: grpc
+              protocol: TCP
+            - containerPort: 14268
+              name: http
+              protocol: TCP
+            - containerPort: 5778
+              name: admin
+              protocol: TCP
+            - containerPort: 5775
+              name: zipkin-thrift
+              protocol: UDP
+            - containerPort: 6831
+              name: jaeger-thrift
+              protocol: UDP
+            - containerPort: 6832
+              name: jaeger-binary
+              protocol: UDP
+            - containerPort: 14269
+              name: admin-http
+              protocol: TCP
+          env:
+            - name: COLLECTOR_ZIPKIN_HOST_PORT
+              value: ":14268"
+            - name: MEMORY_MAX_TRACES
+              value: "50000"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m"

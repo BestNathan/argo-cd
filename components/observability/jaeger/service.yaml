@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger
+  namespace: observability
+  labels:
+    app: jaeger
+spec:
+  type: ClusterIP
+  ports:
+    - port: 16686
+      targetPort: 16686
+      name: query
+      protocol: TCP
+    - port: 14250
+      targetPort: 14250
+      name: grpc
+      protocol: TCP
+    - port: 14268
+      targetPort: 14268
+      name: http
+      protocol: TCP
+    - port: 5778
+      targetPort: 5778
+      name: admin
+      protocol: TCP
+    - port: 5775
+      targetPort: 5775
+      name: zipkin-thrift
+      protocol: UDP
+    - port: 6831
+      targetPort: 6831
+      name: jaeger-thrift
+      protocol: UDP
+    - port: 6832
+      targetPort: 6832
+      name: jaeger-binary
+      protocol: UDP
+  selector:
+    app: jaeger

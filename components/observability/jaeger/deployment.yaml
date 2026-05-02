@@ -44,8 +44,14 @@ spec:
               name: admin-http
               protocol: TCP
           env:
-            - name: COLLECTOR_ZIPKIN_HOST_PORT
-              value: ":14268"
+            - name: SPAN_STORAGE_TYPE
+              value: "badger"
+            - name: BADGER_EPHEMERAL
+              value: "false"
+            - name: BADGER_DIRECTORY_VALUE
+              value: "/badger/data"
+            - name: BADGER_DIRECTORY_KEY
+              value: "/badger/key"
             - name: MEMORY_MAX_TRACES
               value: "50000"
           resources:
@@ -55,3 +61,11 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "250m"
+          volumeMounts:
+            - name: data
+              mountPath: /badger
+              subPath: jaeger
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: shared-nfs

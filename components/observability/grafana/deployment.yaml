@@ -22,8 +22,8 @@ spec:
             - containerPort: 3000
               name: http
           env:
-            - name: GF_TRACING_OPENTELEMETRY_ENABLED
-              value: "false"
+            - name: JAEGER_AGENT_PORT
+              value: ""
           volumeMounts:
             - name: data
               mountPath: /var/lib/grafana

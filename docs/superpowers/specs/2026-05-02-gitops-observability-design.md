@@ -13,11 +13,11 @@ Initialize this repository as a GitOps control plane for observability component
 Two-layer structure:
 
 1. **Application Layer** (`apps/`) — ArgoCD `Application` resources. `app-of-apps.yaml` bootstraps all others.
-2. **Component Layer** (`components/`) — Plain Kubernetes manifests per component.
+2. **Component Layer** (`components/`) — Plain Kubernetes manifests grouped by namespace, then by component.
 
 **Bootstrap flow:** `kubectl apply apps/app-of-apps.yaml` → ArgoCD creates child Applications → each Application syncs its component manifests.
 
-All components deploy to the `observability` namespace. The app-of-apps lives in the `argocd` namespace.
+All observability components deploy to the `observability` namespace, which has its own directory under `components/`. The app-of-apps lives in the `argocd` namespace.
 
 ## Components
 
@@ -59,24 +59,25 @@ nitops/
 │   ├── loki.yaml
 │   └── grafana.yaml
 ├── components/
-│   ├── prometheus/
-│   │   ├── namespace.yaml
-│   │   ├── serviceaccount.yaml
-│   │   ├── clusterrole.yaml
-│   │   ├── clusterrolebinding.yaml
-│   │   ├── configmap.yaml
-│   │   ├── pvc.yaml
-│   │   ├── deployment.yaml
-│   │   └── service.yaml
-│   ├── loki/
-│   │   ├── configmap.yaml
-│   │   ├── deployment.yaml
-│   │   └── service.yaml
-│   └── grafana/
-│       ├── configmap-datasource.yaml
-│       ├── deployment.yaml
-│       ├── service.yaml
-│       └── ingress.yaml
+│   └── observability/                    # namespace-level grouping
+│       ├── namespace.yaml
+│       ├── prometheus/
+│       │   ├── serviceaccount.yaml
+│       │   ├── clusterrole.yaml
+│       │   ├── clusterrolebinding.yaml
+│       │   ├── configmap.yaml
+│       │   ├── pvc.yaml
+│       │   ├── deployment.yaml
+│       │   └── service.yaml
+│       ├── loki/
+│       │   ├── configmap.yaml
+│       │   ├── deployment.yaml
+│       │   └── service.yaml
+│       └── grafana/
+│           ├── configmap-datasource.yaml
+│           ├── deployment.yaml
+│           ├── service.yaml
+│           └── ingress.yaml
 └── test/
 ```
 

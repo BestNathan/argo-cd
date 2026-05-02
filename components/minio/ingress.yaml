@@ -1,13 +1,37 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minio
+  name: minio-api
   namespace: minio
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    higress.io/domain: "api.minio.nhome.local"
 spec:
+  ingressClassName: higress
   rules:
-    - host: minio.nhome.local
+    - host: api.minio.nhome.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-console
+  namespace: minio
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    higress.io/domain: "console.minio.nhome.local"
+spec:
+  ingressClassName: higress
+  rules:
+    - host: console.minio.nhome.local
       http:
         paths:
           - path: /

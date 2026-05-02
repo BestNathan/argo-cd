@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+  labels:
+    app: minio
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/BestNathan/nitops.git
+    targetRevision: main
+    path: components/minio
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

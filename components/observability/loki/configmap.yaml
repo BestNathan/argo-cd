@@ -21,8 +21,7 @@ data:
           secret_access_key: minioadmin
           insecure: true
           s3forcepathstyle: true
-          bucketnames:
-            - loki
+          bucketnames: loki
       replication_factor: 1
       ring:
         kvstore:

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+  namespace: observability
+  labels:
+    app: tempo
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: 3200
+
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: "0.0.0.0:4317"
+            http:
+              endpoint: "0.0.0.0:4318"
+        jaeger:
+          protocols:
+            grpc:
+              endpoint: "0.0.0.0:14250"
+            thrift_http:
+              endpoint: "0.0.0.0:14268"
+        zipkin:
+          endpoint: "0.0.0.0:9411"
+
+    storage:
+      trace:
+        backend: s3
+        s3:
+          bucket: tempo
+          endpoint: minio.minio.svc:9000
+          access_key: admin
+          secret_key: minioadmin
+          insecure: true
+
+    compactor:
+      compaction:
+        block_retention: 72h
+
+    metrics_generator:
+      registry:
+        external_labels:
+          source: tempo
+          cluster: k8s
+      storage:
+        path: /var/tempo/generator/wal
+      traces_storage:
+        path: /var/tempo/generator/traces
+      processor:
+        local_blocks:
+          filter_server_spans: false
+          max_block_duration: 5m
+        span_metrics:
+          enable_explicit_dimensions: true
+          dimensions:
+            - http.method
+            - http.target
+            - http.status_code
+          histogram:
+            buckets: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.0, 2.0]
+        service_graphs:
+          enabled: true
+          wait: 5s
+
+    overrides:
+      defaults:
+        metrics_generator:
+          processors: [service-graphs, span-metrics]

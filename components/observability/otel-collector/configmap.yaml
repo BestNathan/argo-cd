@@ -25,8 +25,8 @@ data:
     exporters:
       otlphttp/tempo:
         endpoint: "http://tempo:4318"
-      loki:
-        endpoint: "http://loki:3100/loki/api/v1/push"
+      otlphttp/loki:
+        endpoint: "http://loki:3100/otlp/v1/logs"
       prometheus:
         endpoint: "0.0.0.0:8889"
         namespace: otel
@@ -48,4 +48,4 @@ data:
         logs:
           receivers: [otlp]
           processors: [memory_limiter, batch]
-          exporters: [loki, debug]
+          exporters: [otlphttp/loki, debug]

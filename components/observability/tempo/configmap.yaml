@@ -37,36 +37,9 @@ data:
           secret_key: minioadmin
           insecure: true
 
-    compactor:
-      compaction:
-        block_retention: 72h
+    ingester:
+      trace_idle_period: 10s
+      max_block_bytes: 1_000_000
+      max_block_duration: 5m
 
-    metrics_generator:
-      registry:
-        external_labels:
-          source: tempo
-          cluster: k8s
-      storage:
-        path: /var/tempo/generator/wal
-      traces_storage:
-        path: /var/tempo/generator/traces
-      processor:
-        local_blocks:
-          filter_server_spans: false
-          max_block_duration: 5m
-        span_metrics:
-          enable_explicit_dimensions: true
-          dimensions:
-            - http.method
-            - http.target
-            - http.status_code
-          histogram:
-            buckets: [0.002, 0.004, 0.008, 0.016, 0.032, 0.064, 0.128, 0.256, 0.512, 1.0, 2.0]
-        service_graphs:
-          enabled: true
-          wait: 5s
-
-    overrides:
-      defaults:
-        metrics_generator:
-          processors: [service-graphs, span-metrics]
+    querier: {}

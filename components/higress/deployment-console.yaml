@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: higress-console
+  namespace: higress-system
+  labels:
+    app: higress-console
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: higress-console
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: higress-console
+    spec:
+      serviceAccountName: higress-console
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: higress-console
+        image: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/console:2.2.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: HIGRESS_CONSOLE_NS
+          value: higress-system
+        - name: HIGRESS_CONSOLE_SECRET_NAME
+          value: higress-console
+        - name: HIGRESS_CONSOLE_CONFIG_MAP_NAME
+          value: higress-console
+        - name: HIGRESS_CONSOLE_SERVICE_HOST
+          value: higress-console.higress-system.svc.cluster.local
+        - name: HIGRESS_CONSOLE_SERVICE_PORT
+          value: "8080"
+        - name: HIGRESS_CONSOLE_CONTROLLER_SERVICE_NAME
+          value: higress-controller
+        - name: HIGRESS_CONSOLE_CONTROLLER_JWT_POLICY
+          value: third-party-jwt
+        - name: CLUSTER_DOMAIN_SUFFIX
+          value: cluster.local
+        - name: HIGRESS_CONSOLE_CONTROLLER_INGRESS_CLASS_NAME
+          value: higress
+        - name: SPRINGDOC_API_DOCS_ENABLED
+          value: "false"
+        - name: SPRINGDOC_SWAGGER_UI_ENABLED
+          value: "false"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+            scheme: HTTP
+          periodSeconds: 10
+          timeoutSeconds: 1
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        volumeMounts:
+        - name: access-token
+          mountPath: /var/run/secrets/access-token
+      volumes:
+      - name: access-token
+        projected:
+          defaultMode: 420
+          sources:
+          - serviceAccountToken:
+              audience: istio-ca
+              expirationSeconds: 3600
+              path: token

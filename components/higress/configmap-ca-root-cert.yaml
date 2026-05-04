@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: higress-ca-root-cert
+  namespace: higress-system
+  labels:
+    istio.io/config: "true"
+data:
+  root-cert.pem: |
+    -----BEGIN CERTIFICATE-----
+    MIIC/TCCAeWgAwIBAgIRAOfzz6hNsxNdJQRdKTHAnOUwDQYJKoZIhvcNAQELBQAw
+    GDEWMBQGA1UEChMNY2x1c3Rlci5sb2NhbDAeFw0yNjAyMTkwNzIzMzBaFw0zNjAy
+    MTcwNzIzMzBaMBgxFjAUBgNVBAoTDWNsdXN0ZXIubG9jYWwwggEiMA0GCSqGSIb3
+    DQEBAQUAA4IBDwAwggEKAoIBAQDVJQgQNw3UA638NzV3imdmPMdfvSpDhUySQ/VI
+    Wp6eLjfbFxi/N60dj2sfpWrJCp/Lt0k8EVTffW+GAJN+HwuFwvVFzXoaZGb6b9jo
+    Cxil8uhiykOsnlGSl2GoWmVw5sIW8ceZFOWvqqCbxPJgf+I/RNJXRAj4SWL/WUNa
+    m2dQkvdjtH0lyRYZ+wHC9EeBXiRWUmcNLdTl/oJW1kGcnZGnc0hhpxADhdfL4QnB
+    puKxOHW0kD4+rGVVi4BJsEHvY6ONySxWKNj9JzLbA9yo+16wqJcytvHwN/RxLnWM
+    dV74jmObjscQz5WiXRRUR2GesI9b5FklbYJrp0JrP+dNoPqpAgMBAAGjQjBAMA4G
+    A1UdDwEB/wQEAwICBDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSOfwq/EHgo
+    mzA9lTEeTR7wDBUQ4jANBgkqhki9w0BAQsFAAOCAQEADzKWbMbmjWqO+fJzD0uv
+    XCx8W2k+D/ujrglqcd7oQQZDO5siE1ggCn0ZRv2prjAP3wrlpADJoSxa++ebU9CI
+    0lQnGgPQtw1Ay2FIMDBjPTvnXubqL9wEUoH9Rt7w232nbr+8oZo1dn++Xbtw7N1P
+    WqORvZlhVfqtI9nBYqfUdgtLHzLy3L/b7cMBU6FIxF+7S1ItAwkmiamBWBbBB3n
+    eWQlH5P/0v8P1CRybRumpNqDkP6cbvLfhoUw6lCWDeVXKGaBlCvXfNwEfYXnSBNV
+    mAGlcXxV115XI34GFuKCWzykf1EUKzEomC2W6OjBrXbwi/AKgoUJeAe8aImPO0ov
+    wA==
+    -----END CERTIFICATE-----

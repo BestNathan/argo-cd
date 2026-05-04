@@ -10,7 +10,7 @@
 - [Jaeger](entities/jaeger.md) — Legacy all-in-one tracing UI (Badger storage on NFS)
 - [Tempo](entities/tempo.md) — Modern tracing backend, S3-backed via MinIO
 - [OTel Collector](entities/otel-collector.md) — Unified telemetry ingestion gateway (LGTM pipelines)
-- [Higress](entities/higress.md) — Ingress controller for external access
+- [Higress](entities/higress.md) — Envoy-based ingress controller (v2.2.0), 2-gateway + controller + console
 - [Shared NFS](entities/shared-nfs.md) — NFS PersistentVolume (100Gi) backing all observability data
 - [Observability Namespace](entities/observability-namespace.md) — Kubernetes namespace for observability stack
 

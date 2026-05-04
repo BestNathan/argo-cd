@@ -1,0 +1,187 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: higress-gateway
+  namespace: higress-system
+  labels:
+    app: higress-gateway
+    higress: higress-system-higress-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: higress-gateway
+      higress: higress-system-higress-gateway
+  strategy:
+    rollingUpdate:
+      maxSurge: 100%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: higress-gateway
+        higress: higress-system-higress-gateway
+        sidecar.istio.io/inject: "false"
+      annotations:
+        prometheus.io/path: /stats/prometheus
+        prometheus.io/port: "15020"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: higress-gateway
+      securityContext:
+        sysctls:
+        - name: net.ipv4.ip_unprivileged_port_start
+          value: "0"
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: higress-gateway
+        image: higress-registry.cn-hangzhou.cr.aliyuncs.com/higress/gateway:2.2.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - proxy
+        - router
+        - --domain
+        - $(POD_NAMESPACE).svc.cluster.local
+        - --proxyLogLevel=warning
+        - --proxyComponentLogLevel=misc:error
+        - --log_output_level=default:info
+        - --serviceCluster=higress-gateway
+        ports:
+        - containerPort: 15020
+          name: istio-prom
+          protocol: TCP
+        - containerPort: 15090
+          name: http-envoy-prom
+          protocol: TCP
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: SERVICE_ACCOUNT
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.serviceAccountName
+        - name: PROXY_XDS_VIA_AGENT
+          value: "true"
+        - name: ENABLE_INGRESS_GATEWAY_SDS
+          value: "false"
+        - name: JWT_POLICY
+          value: third-party-jwt
+        - name: ISTIO_META_HTTP10
+          value: "1"
+        - name: ISTIO_META_CLUSTER_ID
+          value: Kubernetes
+        - name: INSTANCE_NAME
+          value: higress-gateway
+        - name: ISTIO_DELTA_XDS
+          value: "true"
+        readinessProbe:
+          httpGet:
+            path: /healthz/ready
+            port: 15021
+            scheme: HTTP
+          initialDelaySeconds: 1
+          periodSeconds: 2
+          timeoutSeconds: 3
+          failureThreshold: 30
+        resources:
+          requests:
+            cpu: "2"
+            memory: 2Gi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: true
+          runAsGroup: 1337
+          runAsNonRoot: true
+          runAsUser: 1337
+        volumeMounts:
+        - name: workload-socket
+          mountPath: /var/run/secrets/workload-spiffe-uds
+        - name: credential-socket
+          mountPath: /var/run/secrets/credential-uds
+        - name: workload-certs
+          mountPath: /var/run/secrets/workload-spiffe-credentials
+        - name: istio-token
+          mountPath: /var/run/secrets/tokens
+          readOnly: true
+        - name: config
+          mountPath: /etc/istio/config
+        - name: higress-ca-root-cert
+          mountPath: /var/run/secrets/istio
+        - name: istio-data
+          mountPath: /var/lib/istio/data
+        - name: proxy-socket
+          mountPath: /etc/istio/proxy
+        - name: podinfo
+          mountPath: /etc/istio/pod
+      volumes:
+      - emptyDir: {}
+        name: workload-socket
+      - emptyDir: {}
+        name: credential-socket
+      - emptyDir: {}
+        name: workload-certs
+      - name: istio-token
+        projected:
+          defaultMode: 420
+          sources:
+          - serviceAccountToken:
+              audience: istio-ca
+              expirationSeconds: 43200
+              path: istio-token
+      - configMap:
+          name: higress-ca-root-cert
+        name: higress-ca-root-cert
+      - configMap:
+          name: higress-config
+        name: config
+      - emptyDir: {}
+        name: istio-data
+      - emptyDir: {}
+        name: proxy-socket
+      - downwardAPI:
+          defaultMode: 420
+          items:
+          - fieldRef:
+              fieldPath: metadata.labels
+            path: labels
+          - fieldRef:
+              fieldPath: metadata.annotations
+            path: annotations
+          - path: cpu-request
+            resourceFieldRef:
+              containerName: higress-gateway
+              divisor: 1m
+              resource: requests.cpu
+          - path: cpu-limit
+            resourceFieldRef:
+              containerName: higress-gateway
+              divisor: 1m
+              resource: limits.cpu
+        name: podinfo

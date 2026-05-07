@@ -29,10 +29,19 @@ data:
 
     schema_config:
       configs:
+        # Legacy schema for historical data
         - from: "2020-10-24"
           store: boltdb-shipper
           object_store: s3
           schema: v11
+          index:
+            prefix: index_
+            period: 24h
+        # New schema for native OTLP ingestion with structured metadata
+        - from: "2026-05-07"
+          store: tsdb
+          object_store: s3
+          schema: v13
           index:
             prefix: index_
             period: 24h

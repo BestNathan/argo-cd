@@ -26,7 +26,7 @@ data:
       otlphttp/tempo:
         endpoint: "http://tempo:4318"
       otlphttp/loki:
-        endpoint: "http://loki:3100/otlp/v1/logs"
+        endpoint: "http://loki:3100/otlp"
       prometheus:
         endpoint: "0.0.0.0:8889"
         namespace: otel

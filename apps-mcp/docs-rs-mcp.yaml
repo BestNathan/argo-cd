@@ -1,21 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: apps-mcp
+  name: docs-rs-mcp
   namespace: argocd
   labels:
-    app: apps-mcp
+    app: docs-rs-mcp
 spec:
   project: default
   source:
     repoURL: https://github.com/BestNathan/nitops.git
     targetRevision: main
-    path: apps-mcp
-    directory:
-      exclude: "app-of-apps.yaml"
+    path: components/mcp/docs-rs-mcp
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: mcp
   syncPolicy:
     automated:
       prune: true

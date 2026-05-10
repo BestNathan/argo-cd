@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docs-rs-mcp
+  namespace: mcp
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    higress.io/domain: "docs-rs-mcp.mcp.nhome.local"
+spec:
+  ingressClassName: higress
+  rules:
+  - host: docs-rs-mcp.mcp.nhome.local
+    http:
+      paths:
+      - path: /mcp
+        pathType: Prefix
+        backend:
+          service:
+            name: docs-rs-mcp
+            port:
+              number: 8080

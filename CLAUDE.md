@@ -12,7 +12,7 @@ GitOps control plane for Kubernetes observability components, managed by ArgoCD.
 
 ## Architecture
 
-Two-layer App-of-Apps pattern:
+Three-layer App-of-Apps pattern:
 
 ```
 apps/                          # ArgoCD Application resources
@@ -24,7 +24,12 @@ apps/                          # ArgoCD Application resources
 ├── grafana.yaml               # ArgoCD app for Grafana
 ├── minio.yaml                 # ArgoCD app for MinIO
 ├── redis.yaml                 # ArgoCD app for Redis
-└── jaeger.yaml                # ArgoCD app for Jaeger
+├── jaeger.yaml                # ArgoCD app for Jaeger
+└── mcp.yaml                   # ArgoCD sub-app-of-apps → apps-mcp/ (directory recurse)
+
+apps-mcp/                      # MCP services — ArgoCD Application resources
+├── namespace.yaml             # mcp namespace definition
+└── docs-rs-mcp.yaml           # ArgoCD app for docs-rs-mcp
 
 components/                    # Kubernetes manifests
 ├── cluster/                   # Cluster-scoped resources
@@ -38,7 +43,11 @@ components/                    # Kubernetes manifests
 │   ├── grafana/               # Deployment, Service
 │   └── jaeger/                # Deployment, Service
 ├── minio/                     # Namespace, PV, PVC, Deployment, Service, Ingress
-└── redis/                     # Namespace, Deployment, Service
+├── redis/                     # Namespace, Deployment, Service
+└── mcp/                       # MCP service manifests
+    └── docs-rs-mcp/
+        ├── deployment.yaml
+        └── service.yaml
 ```
 
 **Bootstrap flow:** `kubectl apply -f apps/app-of-apps.yaml` → ArgoCD creates child Applications → each Application syncs its component manifests.

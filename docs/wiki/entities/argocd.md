@@ -27,6 +27,7 @@ All Applications share the same pattern:
 | Name | Source Path | Namespace | Purpose |
 |------|-------------|-----------|---------|
 | `apps` | `apps` (dir, excludes app-of-apps.yaml) | argocd | Deploys all child Application resources |
+| `apps-mcp` | `apps-mcp` (dir, recurse) | (varies) | MCP sub-app-of-apps: namespace + service Applications |
 | `observability-cluster` | `components/cluster` | (cluster-scoped) | Shared NFS PersistentVolume |
 | `observability-namespace` | `components/observability/namespace` | observability | Namespace + shared PVC |
 | `prometheus` | `components/observability/prometheus` | observability | Metrics |
@@ -37,6 +38,7 @@ All Applications share the same pattern:
 | `otel-collector` | `components/observability/otel-collector` | observability | Telemetry gateway |
 | `minio` | `components/minio` | (none specified — manifests include namespace) | S3 storage |
 | `redis` | `components/redis` | (none specified — manifests include namespace) | Cache |
+| `docs-rs-mcp` | `components/mcp/docs-rs-mcp` | mcp | MCP service |
 
 ## Bootstrap Flow
 
@@ -52,3 +54,4 @@ Password: `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath=
 - [App-of-Apps Pattern](concepts/app-of-apps-pattern.md)
 - [GitOps Workflow](concepts/gitops-workflow.md)
 - [Observability Namespace](entities/observability-namespace.md)
+- [MCP Services](entities/mcp-services.md)

@@ -2,6 +2,7 @@
 
 ## Entities
 - [ArgoCD](entities/argocd.md) — GitOps orchestrator managing all Application resources
+- [MCP Services](entities/mcp-services.md) — Unified MCP service platform (docs-rs-mcp, etc.)
 - [Prometheus](entities/prometheus.md) — Metrics collection and storage (v3.11.3)
 - [Loki](entities/loki.md) — Log aggregation backend, S3-backed via MinIO
 - [Grafana](entities/grafana.md) — Dashboard UI, provisioned with Prometheus/Loki/Tempo datasources
@@ -15,7 +16,7 @@
 - [Observability Namespace](entities/observability-namespace.md) — Kubernetes namespace for observability stack
 
 ## Concepts
-- [App-of-Apps Pattern](concepts/app-of-apps-pattern.md) — Two-layer ArgoCD bootstrapping architecture
+- [App-of-Apps Pattern](concepts/app-of-apps-pattern.md) — Three-layer ArgoCD bootstrapping architecture
 - [LGTM Stack](concepts/lgtm-stack.md) — Loki, Grafana, Tempo, Prometheus unified observability
 - [GitOps Workflow](concepts/gitops-workflow.md) — Repository-driven deployments via ArgoCD
 - [SubPath PVC Isolation](concepts/subpath-pvc-isolation.md) — Single shared PVC with per-component subPath mounts

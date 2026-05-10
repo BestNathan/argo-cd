@@ -11,7 +11,7 @@ tags: [argocd, architecture, gitops]
 
 ## Overview
 
-The nitops project uses a two-layer App-of-Apps pattern to bootstrap and manage all Kubernetes resources through ArgoCD. A single `kubectl apply` creates the root Application, which then creates all child Applications, each of which syncs its own component manifests.
+The nitops project uses a three-layer App-of-Apps pattern to bootstrap and manage all Kubernetes resources through ArgoCD. A single `kubectl apply` creates the root Application, which then creates all child Applications, each of which syncs its own component manifests.
 
 ## Layer 1: Root Application
 
@@ -37,8 +37,21 @@ apps/
 ├── redis.yaml                 # Redis
 ├── jaeger.yaml                # Jaeger
 ├── tempo.yaml                 # Tempo
-└── otel-collector.yaml        # OTel Collector
+├── otel-collector.yaml        # OTel Collector
+└── mcp.yaml                   → apps-mcp/ sub-app-of-apps
 ```
+
+## Layer 3: MCP Sub-App-of-Apps
+
+The `apps/mcp.yaml` Application uses `directory: recurse: true` to scan `apps-mcp/`, enabling multiple MCP services to be managed independently:
+
+```
+apps-mcp/
+├── namespace.yaml             # mcp namespace
+└── docs-rs-mcp.yaml           # ArgoCD Application → components/mcp/docs-rs-mcp/
+```
+
+This keeps ArgoCD Applications (metadata) separate from Kubernetes manifests (resources), avoiding directory-scan conflicts.
 
 ## Sync Policy
 
@@ -55,11 +68,14 @@ syncPolicy:
 | Application | Namespace Scope | Purpose |
 |-------------|----------------|---------|
 | `apps` | `argocd` | Creates child Applications |
+| `apps-mcp` | `argocd` | MCP sub-app-of-apps: scans apps-mcp/ directory |
 | `observability-cluster` | Cluster-scoped | Shared NFS PV |
 | `observability-namespace` | `observability` | Namespace + PVC |
 | Component apps | `observability` | Individual components |
 | `minio`, `redis` | (from manifests) | Separate namespaces |
+| `docs-rs-mcp` | `mcp` | MCP service |
 
 ## Related
 - [ArgoCD](entities/argocd.md)
 - [GitOps Workflow](concepts/gitops-workflow.md)
+- [MCP Services](entities/mcp-services.md)

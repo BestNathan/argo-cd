@@ -12,7 +12,7 @@ spec:
     targetRevision: main
     path: apps-mcp
     directory:
-      exclude: "app-of-apps.yaml"
+      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

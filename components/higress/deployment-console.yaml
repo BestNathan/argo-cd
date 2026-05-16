@@ -9,7 +9,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: higress-console
+      app.kubernetes.io/name: higress-console
   strategy:
     rollingUpdate:
       maxSurge: 25%

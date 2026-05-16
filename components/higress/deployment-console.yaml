@@ -18,7 +18,6 @@ spec:
   template:
     metadata:
       labels:
-        app: higress-console
         app.kubernetes.io/instance: higress
         app.kubernetes.io/name: higress-console
     spec:

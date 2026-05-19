@@ -41,3 +41,25 @@ spec:
                 name: minio
                 port:
                   number: 9001
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-console-public
+  namespace: minio
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    higress.io/domain: "minio.bestnathan.top"
+spec:
+  ingressClassName: higress
+  rules:
+    - host: minio.bestnathan.top
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9001
